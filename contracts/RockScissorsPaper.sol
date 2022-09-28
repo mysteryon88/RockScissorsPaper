@@ -13,7 +13,7 @@ contract RockScissorsPaper {
         }
 
         struct PairChoice {
-                bytes32 /*int8*/ hashedChoice;
+                bytes32 hashedChoice;
                 int8 choice;
         }
 
@@ -23,15 +23,17 @@ contract RockScissorsPaper {
 
         mapping (uint => mapping (address => PairChoice)) public choices;
 
+        event startedGame(uint _idGame, address _who, uint _timestamp);
+
         event joinedGame(uint _idGame, address _who, uint _timestamp);
 
         event stoppedGame(uint _idGame, uint _timestamp);
 
         event revealedChoice(uint _idGame, address _who, int8 _choice, uint _timestamp);
 
-        event endGame(uint _idGame, address _winner, uint _timestamp);
+        event endGame(uint _idGame, string _winnerStr, address _winnerAddr, uint _timestamp);
 
-        function startGame(bytes32 /*int8*/ _hashedChoice) external payable returns(uint)  {
+        function startGame(bytes32 _hashedChoice) external payable returns(uint)  {
 
                 Game storage newGame = games.push();
 
@@ -42,10 +44,12 @@ contract RockScissorsPaper {
 
                 choices[games.length - 1][msg.sender].hashedChoice = _hashedChoice;
 
-                return  games.length - 1;
+                emit startedGame(games.length - 1, msg.sender, block.timestamp);
+                
+                return games.length - 1;
         }
 
-        function joinGame(uint _idGame, bytes32 /*int8*/ _hashedChoice) external payable gameOver(_idGame) {
+        function joinGame(uint _idGame, bytes32 _hashedChoice) external payable gameOver(_idGame) {
 
                 require(games[_idGame].players.length != 2, "Recruitment is over");
 
@@ -80,7 +84,6 @@ contract RockScissorsPaper {
                 require(games[_idGame].gameStopped, "The game is still running");
 
                 bytes32 commit = keccak256(abi.encodePacked(_choice, _secret));
-                //int8 commit = _choice;
 
                 require(commit == choices[_idGame][msg.sender].hashedChoice, "You entered something wrong please try again");
 
@@ -117,7 +120,7 @@ contract RockScissorsPaper {
                         balances[games[_idGame].players[1]] = games[_idGame].bank;
                 }
 
-                emit endGame(_idGame, games[_idGame].winner, block.timestamp);
+                emit endGame(_idGame, _winner, games[_idGame].winner, block.timestamp);       
         }
 
         function withdrawAll() external {
@@ -138,4 +141,5 @@ contract RockScissorsPaper {
                 require(!games[_idGame].gameStopped, "Game over");
                 _;
         }
+        
 }
