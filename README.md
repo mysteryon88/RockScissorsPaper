@@ -11,13 +11,13 @@ Paper = 3
 
 first player win
 
-1 - 2 = -1 rock beats scissors
-2 - 3 = -1 scissors beats paper
-3 - 1 = 2 paper beats rock
+1 - 2 = -1 (rock beats scissors)
+2 - 3 = -1 (scissors beats paper)
+3 - 1 = 2 (paper beats rock)
 
 second player win
 
-3 - 2 = 1
-1 - 3 = -2 
-2 - 1 = 1 
+3 - 2 = 1 (scissors beats paper)
+1 - 3 = -2 (paper beats rock)
+2 - 1 = 1 (rock beats scissors)
 ```
